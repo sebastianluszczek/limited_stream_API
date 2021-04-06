@@ -35,9 +35,37 @@ exports.getOne = async (req, res, next) => {
   try {
     const id = req.params.id;
     const video = VIDEOS.find(v => v.id === id);
+
     if (!video) {
-      throw new ErrorHandler(404, `Video ${id} not found`);
+      throw new ErrorHandler(404, `Video ${id} not found.`);
     }
+
+    const stream = { id, time: new Date() };
+
+    if (req.session.streams) {
+      const updateStream = req.session.streams.map(s => s.id).includes(id);
+      const buffTime = 1000 * 10;
+
+      req.session.streams = req.session.streams.filter(
+        s => new Date() - new Date(s.time) < buffTime
+      );
+
+      if (req.session.streams.length >= 3) {
+        throw new ErrorHandler(
+          403,
+          `User exceeded max number of streams watched at the same time (3).`
+        );
+      }
+
+      req.session.streams = updateStream
+        ? req.session.streams.map(s =>
+            s.id === id ? { id, time: new Date() } : s
+          )
+        : [...req.session.streams, stream];
+    } else {
+      req.session.streams = [stream];
+    }
+
     res.json({ data: video });
   } catch (error) {
     next(error);
