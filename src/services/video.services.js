@@ -19,8 +19,8 @@ const VIDEOS = [
 ];
 
 exports.getAllVideos = () => {
-  return [VIDEOS, null]
-}
+  return [VIDEOS, null];
+};
 
 exports.getOneVideo = (video_id) => {
   if (!video_id) {
@@ -28,9 +28,9 @@ exports.getOneVideo = (video_id) => {
       {},
       {
         error: true,
-        msg: 'No video_id provided'
-      }
-    ]
+        msg: 'No video_id provided',
+      },
+    ];
   }
-  return [VIDEOS.find(v => v.id === video_id), null];
-}
+  return [VIDEOS.find((v) => v.id === video_id), null];
+};
