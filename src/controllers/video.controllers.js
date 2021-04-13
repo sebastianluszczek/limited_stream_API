@@ -6,7 +6,10 @@ const {limitStreams} = require('../utils/stream.utils')
 // GET all ivideos
 exports.getAll = async (req, res, next) => {
   try {
-    const videos = getAllVideos();
+    const [videos, error] = getAllVideos();
+    if (error) {
+
+    }
     res.json({ data: videos });
   } catch (error) {
     next(error);
@@ -17,14 +20,17 @@ exports.getAll = async (req, res, next) => {
 exports.getOne = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const video = getOneVideo(id);
+    const [video, video_error] = getOneVideo(id);
+    if (video_error) {
+      throw new ErrorHandler(400, video_error.msg);
+    }
 
     if (!video) {
       throw new ErrorHandler(404, `Video ${id} not found.`);
     }
 
-    const [streams, error] = limitStreams(id, req.session.streams)
-    if (error) {
+    const [streams, stream_error] = limitStreams(id, req.session.streams)
+    if (stream_error) {
       throw new ErrorHandler(403, error.msg);
     }
     req.session.streams = streams;

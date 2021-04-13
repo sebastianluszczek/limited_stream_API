@@ -19,9 +19,18 @@ const VIDEOS = [
 ];
 
 exports.getAllVideos = () => {
-  return [...VIDEOS]
+  return [VIDEOS, null]
 }
 
-exports.getOneVideo = (videoId) => {
-  return VIDEOS.find(v => v.id === videoId);
+exports.getOneVideo = (video_id) => {
+  if (!video_id) {
+    return [
+      {},
+      {
+        error: true,
+        msg: 'No video_id provided'
+      }
+    ]
+  }
+  return [VIDEOS.find(v => v.id === video_id), null];
 }
